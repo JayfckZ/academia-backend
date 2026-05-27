@@ -1,0 +1,38 @@
+# Dependências
+node_modules
+
+# Variáveis de ambiente
+.env
+.env.*
+!.env.example
+
+# Build
+dist
+build
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Prisma
+prisma/migrations/**/migration_lock.toml
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode
+.idea
+
+# Vite / React
+.vite
+
+# Coverage (testes)
+coverage
+
+# TypeScript
+*.tsbuildinfo
