@@ -6,7 +6,7 @@ import { studentRoutes } from './routes/StudentRoutes'
 import { employeeRoutes } from "./routes/EmployeeRoutes"
 import { planRoutes } from './routes/PlanRoutes'
 import { enrollmentRoutes } from './routes/EnrollmentRoutes'
-
+import { paymentRoutes } from './routes/PaymentRoutes'
 
 export function buildApp() {
     const app = Fastify()
@@ -21,6 +21,7 @@ export function buildApp() {
     app.register(employeeRoutes)
     app.register(planRoutes)
     app.register(enrollmentRoutes)
+    app.register(paymentRoutes)
 
     return app
 }

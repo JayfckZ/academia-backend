@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client"
+import { PaymentService } from "./PaymentService"
 
 const prisma = new PrismaClient()
 
@@ -21,7 +22,7 @@ export class EnrollmentService {
             plan.durationType
         )
 
-        return prisma.enrollment.create({
+        const enrollment = await prisma.enrollment.create({
             data: {
                 studentId: data.studentId,
                 planId: data.planId,
@@ -29,6 +30,10 @@ export class EnrollmentService {
                 endDate
             }
         })
+
+        await PaymentService.createFromEnrollment(enrollment.id)
+
+        return enrollment
     }
 
     static findAll(page: number, limit: number) {

@@ -21,7 +21,6 @@ model Student {
   updatedAt          DateTime @updatedAt
 
   enrollments        Enrollment[]
-  payments           Payment[]
 
   @@index([name])
 }
@@ -64,7 +63,10 @@ model Enrollment {
   student Student @relation(fields: [studentId], references: [id])
   plan    Plan    @relation(fields: [planId], references: [id])
 
-  @@unique([studentId, planId, status])
+  payments Payment[]
+
+  @@index([studentId])
+  @@index([status])
 }
 
 enum EnrollmentStatus {
@@ -75,15 +77,26 @@ enum EnrollmentStatus {
 }
 
 model Payment {
-  id        String   @id @default(uuid())
-  studentId String
-  amount    Float
-  dueDate   DateTime
-  paidAt    DateTime?
-  status    String   @default("PENDING")
-  createdAt DateTime @default(now())
+  id           String        @id @default(uuid())
 
-  student Student @relation(fields: [studentId], references: [id])
+  enrollmentId String
+  amount       Decimal
+
+  dueDate      DateTime
+  paidAt       DateTime?
+
+  status       PaymentStatus @default(PENDING)
+
+  createdAt    DateTime @default(now())
+
+  enrollment   Enrollment    @relation(fields: [enrollmentId], references: [id])
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  OVERDUE
+  CANCELED
 }
 
 model Employee {

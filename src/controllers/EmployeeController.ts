@@ -25,7 +25,7 @@ export class EmployeeController {
     static async findById(request: any, reply: any) {
         const { id } = request.params
 
-        const employee = await EmployeeService.update(id, request.body)
+        const employee = await EmployeeService.findById(id)
         return reply.send(employee)
     }
 
