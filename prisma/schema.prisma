@@ -31,11 +31,20 @@ model Plan {
   name            String
   description     String?
   price           Float
-  durationMonths  Int
+
+  duration        Int
+  durationType    PlanDurationType
+
   active          Boolean  @default(true)
   createdAt       DateTime @default(now())
 
   enrollments Enrollment[]
+}
+
+enum PlanDurationType {
+  DAYS
+  WEEKS
+  MONTHS
 }
 
 model Enrollment {
