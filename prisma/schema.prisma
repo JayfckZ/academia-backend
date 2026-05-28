@@ -49,14 +49,29 @@ enum PlanDurationType {
 
 model Enrollment {
   id        String   @id @default(uuid())
+
   studentId String
   planId    String
+
   startDate DateTime
   endDate   DateTime?
-  active    Boolean  @default(true)
+
+  status    EnrollmentStatus @default(ACTIVE)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   student Student @relation(fields: [studentId], references: [id])
   plan    Plan    @relation(fields: [planId], references: [id])
+
+  @@unique([studentId, planId, status])
+}
+
+enum EnrollmentStatus {
+  ACTIVE
+  CANCELED
+  EXPIRED
+  SUSPENDED
 }
 
 model Payment {

@@ -4,6 +4,9 @@ import cors from '@fastify/cors'
 import { healthRoutes } from './routes/health'
 import { studentRoutes } from './routes/StudentRoutes'
 import { employeeRoutes } from "./routes/EmployeeRoutes"
+import { planRoutes } from './routes/PlanRoutes'
+import { enrollmentRoutes } from './routes/EnrollmentRoutes'
+
 
 export function buildApp() {
     const app = Fastify()
@@ -16,6 +19,8 @@ export function buildApp() {
     app.register(healthRoutes)
     app.register(studentRoutes)
     app.register(employeeRoutes)
+    app.register(planRoutes)
+    app.register(enrollmentRoutes)
 
     return app
 }
