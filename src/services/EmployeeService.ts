@@ -39,9 +39,10 @@ export class EmployeeService {
                 skip,
                 take: limit,
                 orderBy: { name: "asc" },
+                where: { active: true },
                 select: SELECT_SAFE
             }),
-            prisma.employee.count()
+            prisma.employee.count({ where: { active: true } })
         ])
     }
 
@@ -83,6 +84,9 @@ export class EmployeeService {
     }
 
     static delete(id: string) {
-        return prisma.employee.delete({ where: { id } })
+        return prisma.employee.update({
+            where: { id },
+            data: { active: false }
+        })
     }
 }

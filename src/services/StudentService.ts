@@ -5,24 +5,15 @@ import { createStudentSchema, updateStudentSchema } from "../schemas"
 
 export class StudentService {
     private static async generateRegistrationNumber(): Promise<string> {
-        while (true) {
-            const lastStudent = await prisma.student.findFirst({
+        return prisma.$transaction(async (tx) => {
+            const last = await tx.student.findFirst({
                 orderBy: { registrationNumber: "desc" },
                 select: { registrationNumber: true }
             })
 
-            const lastNumber = lastStudent
-                ? parseInt(lastStudent.registrationNumber)
-                : 0
-
-            const registrationNumber = String(lastNumber + 1).padStart(6, "0")
-
-            const exists = await prisma.student.findUnique({
-                where: { registrationNumber }
-            })
-
-            if (!exists) return registrationNumber
-        }
+            const next = last ? parseInt(last.registrationNumber) + 1 : 1
+            return String(next).padStart(6, "0")
+        })
     }
 
     static async create(data: unknown) {
@@ -104,6 +95,9 @@ export class StudentService {
     }
 
     static delete(id: string) {
-        return prisma.student.delete({ where: { id } })
+        return prisma.student.update({
+            where: { id },
+            data: { active: false }
+        })
     }
 }

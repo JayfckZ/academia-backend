@@ -1,6 +1,13 @@
 import { FastifyRequest, FastifyReply } from "fastify"
 import { EmployeeService } from "../services/EmployeeService"
 
+function parsePagination(query: unknown) {
+    const q = query as { page?: string, limit?: string }
+    const page = Math.max(1, Number(q.page) || 1)
+    const limit = Math.min(100, Math.max(1, Number(q.limit) || 10))
+    return { page, limit }
+}
+
 export class EmployeeController {
 
     static async create(request: FastifyRequest, reply: FastifyReply) {
@@ -9,11 +16,11 @@ export class EmployeeController {
     }
 
     static async findAll(request: FastifyRequest, reply: FastifyReply) {
-        const { page = 1, limit = 10 } = request.query as { page?: number, limit?: number }
+        const { page, limit } = parsePagination(request.query)
 
-        const [data, total] = await EmployeeService.findAll(Number(page), Number(limit))
+        const [data, total] = await EmployeeService.findAll(page, limit)
 
-        return reply.send({ data, total, page: Number(page), limit: Number(limit) })
+        return reply.send({ data, total, page, limit })
     }
 
     static async findById(request: FastifyRequest, reply: FastifyReply) {
