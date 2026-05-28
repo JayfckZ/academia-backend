@@ -8,17 +8,22 @@ datasource db {
 }
 
 model Student {
-  id        String   @id @default(uuid())
-  name      String
-  email     String   @unique
-  cpf       String   @unique
-  phone     String?
-  birthDate DateTime
-  status    String   @default("ACTIVE")
-  createdAt DateTime @default(now())
+  id                 String   @id @default(uuid())
+  registrationNumber String   @unique
+  name               String
+  email              String   @unique
+  cpf                String   @unique
+  phone              String?
+  birthDate          DateTime
+  status             String   @default("ACTIVE")
 
-  enrollments Enrollment[]
-  payments    Payment[]
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  enrollments        Enrollment[]
+  payments           Payment[]
+
+  @@index([name])
 }
 
 model Plan {
