@@ -1,30 +1,28 @@
-import { PrismaClient } from "@prisma/client"
 import { AppError } from "../errors/AppError"
+import { prisma } from "../lib/prisma"
+import { createEnrollmentSchema, updateEnrollmentSchema } from "../schemas"
 import { PaymentService } from "./PaymentService"
-
-const prisma = new PrismaClient()
 
 export class EnrollmentService {
 
-    static async create(data: any) {
-        const plan = await prisma.plan.findUnique({
-            where: { id: data.planId }
-        })
+    static async create(data: unknown) {
+        const parsed = createEnrollmentSchema.safeParse(data)
 
-        if (!plan) {
-            throw new AppError("Plano não encontrado.", 404)
+        if (!parsed.success) {
+            throw new AppError(parsed.error?.issues?.[0]?.message ?? "Dados inválidos.", 400)
         }
 
-        const startDate = new Date(data.startDate)
-        const endDate = this.calculateEndDate(startDate, plan.duration, plan.durationType)
+        const { studentId, planId, startDate } = parsed.data
+
+        const plan = await prisma.plan.findUnique({ where: { id: planId } })
+
+        if (!plan) throw new AppError("Plano não encontrado.", 404)
+
+        const start = new Date(startDate)
+        const endDate = this.calculateEndDate(start, plan.duration, plan.durationType)
 
         const enrollment = await prisma.enrollment.create({
-            data: {
-                studentId: data.studentId,
-                planId: data.planId,
-                startDate,
-                endDate
-            }
+            data: { studentId, planId, startDate: start, endDate }
         })
 
         await PaymentService.createFromEnrollment(enrollment.id)
@@ -46,18 +44,29 @@ export class EnrollmentService {
         ])
     }
 
-    static findById(id: string) {
-        return prisma.enrollment.findUnique({
+    static async findById(id: string) {
+        const enrollment = await prisma.enrollment.findUnique({
             where: { id },
             include: { student: true, plan: true }
         })
+
+        if (!enrollment) throw new AppError("Matrícula não encontrada.", 404)
+
+        return enrollment
     }
 
-    static update(id: string, data: any) {
-        return prisma.enrollment.update({
-            where: { id },
-            data
-        })
+    static async update(id: string, data: unknown) {
+        const parsed = updateEnrollmentSchema.safeParse(data)
+
+        if (!parsed.success) {
+            throw new AppError(parsed.error?.issues?.[0]?.message ?? "Dados inválidos.", 400)
+        }
+
+        const updateData = Object.fromEntries(
+            Object.entries(parsed.data).filter(([, v]) => v !== undefined)
+        )
+
+        return prisma.enrollment.update({ where: { id }, data: updateData })
     }
 
     static cancel(id: string) {

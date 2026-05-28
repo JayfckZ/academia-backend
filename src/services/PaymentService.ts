@@ -1,7 +1,5 @@
-import { PrismaClient } from "@prisma/client"
 import { AppError } from "../errors/AppError"
-
-const prisma = new PrismaClient()
+import { prisma } from "../lib/prisma"
 
 export class PaymentService {
 
@@ -11,9 +9,7 @@ export class PaymentService {
             include: { plan: true }
         })
 
-        if (!enrollment) {
-            throw new AppError("Matrícula não encontrada.", 404)
-        }
+        if (!enrollment) throw new AppError("Matrícula não encontrada.", 404)
 
         return prisma.payment.create({
             data: {
@@ -43,8 +39,8 @@ export class PaymentService {
         ])
     }
 
-    static findById(id: string) {
-        return prisma.payment.findUnique({
+    static async findById(id: string) {
+        const payment = await prisma.payment.findUnique({
             where: { id },
             include: {
                 enrollment: {
@@ -52,6 +48,10 @@ export class PaymentService {
                 }
             }
         })
+
+        if (!payment) throw new AppError("Pagamento não encontrado.", 404)
+
+        return payment
     }
 
     static markAsPaid(id: string) {
