@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client"
+import { AppError } from "../errors/AppError"
 
 const prisma = new PrismaClient()
 
@@ -16,17 +17,20 @@ export class StudentService {
         const lastNumber = lastStudent
             ? parseInt(lastStudent.registrationNumber)
             : 0
-    
+
         const nextNumber = lastNumber + 1
 
         return String(nextNumber).padStart(6, '0')
     }
 
-
     static async create(data: any) {
+        if (!data.name || !data.email || !data.cpf || !data.birthDate) {
+            throw new AppError("Campos obrigatórios ausentes.", 400)
+        }
+
         const registrationNumber = await this.generateRegistrationNumber()
 
-        return prisma.student.create({
+        return await prisma.student.create({
             data: {
                 registrationNumber,
                 name: data.name,
@@ -51,10 +55,16 @@ export class StudentService {
         ])
     }
 
-    static findById(id: string) {
-        return prisma.student.findUnique({
+    static async findById(id: string) {
+        const student = await prisma.student.findUnique({
             where: { id }
         })
+
+        if (!student) {
+            throw new AppError("Aluno não encontrado.", 404)
+        }
+
+        return student
     }
 
     static findStudent(q: string) {
@@ -85,15 +95,15 @@ export class StudentService {
         })
     }
 
-    static update(id: string, data: any) {
-        return prisma.student.update({
+    static async update(id: string, data: any) {
+        return await prisma.student.update({
             where: { id },
             data
         })
     }
 
-    static delete(id: string) {
-        return prisma.student.delete({
+    static async delete(id: string) {
+        return await prisma.student.delete({
             where: { id }
         })
     }

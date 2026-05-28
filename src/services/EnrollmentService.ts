@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client"
+import { AppError } from "../errors/AppError"
 import { PaymentService } from "./PaymentService"
 
 const prisma = new PrismaClient()
@@ -11,16 +12,11 @@ export class EnrollmentService {
         })
 
         if (!plan) {
-            throw new Error("Plano não encontrado")
+            throw new AppError("Plano não encontrado.", 404)
         }
 
         const startDate = new Date(data.startDate)
-
-        const endDate = this.calculateEndDate(
-            startDate,
-            plan.duration,
-            plan.durationType
-        )
+        const endDate = this.calculateEndDate(startDate, plan.duration, plan.durationType)
 
         const enrollment = await prisma.enrollment.create({
             data: {
@@ -44,10 +40,7 @@ export class EnrollmentService {
                 skip,
                 take: limit,
                 orderBy: { createdAt: "desc" },
-                include: {
-                    student: true,
-                    plan: true
-                }
+                include: { student: true, plan: true }
             }),
             prisma.enrollment.count()
         ])
@@ -56,10 +49,7 @@ export class EnrollmentService {
     static findById(id: string) {
         return prisma.enrollment.findUnique({
             where: { id },
-            include: {
-                student: true,
-                plan: true
-            }
+            include: { student: true, plan: true }
         })
     }
 
@@ -73,28 +63,20 @@ export class EnrollmentService {
     static cancel(id: string) {
         return prisma.enrollment.update({
             where: { id },
-            data: {
-                status: "CANCELED"
-            }
+            data: { status: "CANCELED" }
         })
     }
 
-    private static calculateEndDate(
-        startDate: Date,
-        duration: number,
-        type: string
-    ) {
+    private static calculateEndDate(startDate: Date, duration: number, type: string) {
         const endDate = new Date(startDate)
 
         switch (type) {
             case "DAYS":
                 endDate.setDate(endDate.getDate() + duration)
                 break
-
             case "WEEKS":
-                endDate.setDate(endDate.getDate() + (duration * 7))
+                endDate.setDate(endDate.getDate() + duration * 7)
                 break
-
             case "MONTHS":
                 endDate.setMonth(endDate.getMonth() + duration)
                 break

@@ -7,6 +7,7 @@ import { employeeRoutes } from "./routes/EmployeeRoutes"
 import { planRoutes } from './routes/PlanRoutes'
 import { enrollmentRoutes } from './routes/EnrollmentRoutes'
 import { paymentRoutes } from './routes/PaymentRoutes'
+import { errorHandler } from './plugins/errorHandler'
 
 export function buildApp() {
     const app = Fastify()
@@ -15,6 +16,7 @@ export function buildApp() {
     app.register(jwt, {
         secret: 'supersecret'
     })
+    app.register(errorHandler)
 
     app.register(healthRoutes)
     app.register(studentRoutes)

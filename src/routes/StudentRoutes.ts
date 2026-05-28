@@ -1,6 +1,7 @@
+import { FastifyInstance } from "fastify"
 import { StudentController } from "../controllers/StudentController"
 
-export async function studentRoutes(app: any) {
+export async function studentRoutes(app: FastifyInstance) {
 
     app.post("/students", StudentController.create)
 

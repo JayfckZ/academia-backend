@@ -66,7 +66,15 @@ export class EmployeeService {
         
         return prisma.employee.update({
             where: { id },
-            data: updatedData
+            data: updatedData,
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                role: true,
+                active: true,
+                createdAt: true
+        }
         })
     }
 

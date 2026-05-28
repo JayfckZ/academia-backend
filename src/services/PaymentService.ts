@@ -1,18 +1,18 @@
 import { PrismaClient } from "@prisma/client"
+import { AppError } from "../errors/AppError"
 
 const prisma = new PrismaClient()
 
 export class PaymentService {
+
     static async createFromEnrollment(enrollmentId: string) {
         const enrollment = await prisma.enrollment.findUnique({
             where: { id: enrollmentId },
-            include: {
-                plan: true
-            }
+            include: { plan: true }
         })
 
         if (!enrollment) {
-            throw new Error("Matrícula não encontrada")
+            throw new AppError("Matrícula não encontrada.", 404)
         }
 
         return prisma.payment.create({
@@ -35,10 +35,7 @@ export class PaymentService {
                 orderBy: { createdAt: "desc" },
                 include: {
                     enrollment: {
-                        include: {
-                            student: true,
-                            plan: true
-                        }
+                        include: { student: true, plan: true }
                     }
                 }
             }),
@@ -51,31 +48,23 @@ export class PaymentService {
             where: { id },
             include: {
                 enrollment: {
-                    include: {
-                        student: true,
-                        plan: true
-                    }
+                    include: { student: true, plan: true }
                 }
             }
         })
     }
 
-    static async markAsPaid(id: string) {
+    static markAsPaid(id: string) {
         return prisma.payment.update({
             where: { id },
-            data: {
-                status: "PAID",
-                paidAt: new Date()
-            }
+            data: { status: "PAID", paidAt: new Date() }
         })
     }
 
-    static async markAsOverdue(id: string) {
+    static markAsOverdue(id: string) {
         return prisma.payment.update({
             where: { id },
-            data: {
-                status: "OVERDUE"
-            }
+            data: { status: "OVERDUE" }
         })
     }
 }
