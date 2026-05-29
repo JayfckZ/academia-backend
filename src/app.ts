@@ -8,9 +8,16 @@ import { planRoutes } from './routes/PlanRoutes'
 import { enrollmentRoutes } from './routes/EnrollmentRoutes'
 import { paymentRoutes } from './routes/PaymentRoutes'
 import { errorHandler } from './plugins/errorHandler'
+import { authRoutes } from './routes/AuthRoute'
 
 export function buildApp() {
-    const app = Fastify()
+    const app = Fastify({
+        ajv: {
+            customOptions : {
+                strict: false
+            }
+        }
+    })
 
     app.register(cors)
     app.register(jwt, {
@@ -24,6 +31,7 @@ export function buildApp() {
     app.register(planRoutes)
     app.register(enrollmentRoutes)
     app.register(paymentRoutes)
+    app.register(authRoutes)
 
     return app
 }

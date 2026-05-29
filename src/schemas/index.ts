@@ -4,7 +4,7 @@ import { EmployeeRole } from "@prisma/client"
 export const createStudentSchema = z.object({
     name: z.string().min(1, "Nome é obrigatório"),
     email: z.string().email("Email inválido"),
-    cpf: z.string().length(11, "CPF deve ter 11 dígitos"),
+    cpf: z.string().length(14, "CPF deve ter 14 dígitos"),
     birthDate: z.string().refine(d => !isNaN(Date.parse(d)), { message: "Data inválida" }),
     phone: z.string().optional()
 })
