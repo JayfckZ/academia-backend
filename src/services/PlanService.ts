@@ -25,8 +25,7 @@ export class PlanService {
 
     static findAll() {
         return prisma.plan.findMany({
-            orderBy: { name: "asc" },
-            where: { active: true }
+            orderBy: { createdAt: "asc" }
         })
     }
 

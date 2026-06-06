@@ -15,7 +15,7 @@ model Student {
   cpf                String   @unique
   phone              String?
   birthDate          DateTime
-  status             String   @default("ACTIVE")
+  status             Boolean   @default(true)
 
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt

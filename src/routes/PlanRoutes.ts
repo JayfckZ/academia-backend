@@ -3,8 +3,6 @@ import { PlanController } from "../controllers/PlanController"
 import { authenticate } from "../plugins/authenticate"
 
 export async function planRoutes(app: FastifyInstance) {
-    app.addHook("preHandler", authenticate)
-    
     app.post("/plans", PlanController.create)
     app.get("/plans", PlanController.findAll)
     app.get("/plans/:id", PlanController.findById)

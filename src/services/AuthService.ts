@@ -18,7 +18,7 @@ export class AuthService {
 
         return {
             id: employee.id,
-            name: employee.id,
+            name: employee.name,
             role: employee.role
         }
     }

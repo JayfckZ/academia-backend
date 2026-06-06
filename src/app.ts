@@ -19,7 +19,11 @@ export function buildApp() {
         }
     })
 
-    app.register(cors)
+    app.register(cors, {
+        origin: true,
+        methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+        credentials: true
+    })
     app.register(jwt, {
         secret: 'supersecret'
     })

@@ -7,8 +7,8 @@ export class AuthController {
 
         const employee = await AuthService.login(email, password)
 
-        const token = await reply.jwtSign(
-            { id: employee.id, role: employee.role },
+        const token = await (reply as any).jwtSign(
+            { id: employee.id, name: employee.name, role: employee.role },
             { expiresIn: '8h' }
         )
 

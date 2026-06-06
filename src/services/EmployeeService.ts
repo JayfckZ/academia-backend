@@ -25,10 +25,17 @@ export class EmployeeService {
         const { name, email, password, role } = parsed.data
         const passwordHash = await bcrypt.hash(password, 10)
 
-        return prisma.employee.create({
-            data: { name, email, passwordHash, role },
-            select: SELECT_SAFE
-        })
+        try { 
+            return await prisma.employee.create({
+                data: { name, email, passwordHash, role },
+                select: SELECT_SAFE
+            })
+        } catch (error) {
+            if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+                throw new AppError("Já existe um funcionário com este e-mail.", 409)
+            }
+            throw error
+        }
     }
 
     static findAll(page: number, limit: number) {
@@ -39,10 +46,9 @@ export class EmployeeService {
                 skip,
                 take: limit,
                 orderBy: { name: "asc" },
-                where: { active: true },
                 select: SELECT_SAFE
             }),
-            prisma.employee.count({ where: { active: true } })
+            prisma.employee.count()
         ])
     }
 

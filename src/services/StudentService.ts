@@ -27,16 +27,20 @@ export class StudentService {
 
         const registrationNumber = await this.generateRegistrationNumber()
 
-        return prisma.student.create({
-            data: {
-                registrationNumber,
-                name,
-                email,
-                cpf,
-                birthDate: new Date(birthDate),
-                ...(phone !== undefined && { phone })
+        try { 
+            return await prisma.student.create({
+                data: {
+                    registrationNumber, name, email, cpf,
+                    birthDate: new Date(birthDate),
+                    ...(phone !== undefined && { phone })
+                }
+            })
+        } catch (error) {
+            if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+                throw new AppError("Já existe um aluno com este CPF ou E-mail.", 409)
             }
-        })
+            throw error 
+        }
     }
 
     static findAll(page: number, limit: number) {

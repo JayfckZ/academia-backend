@@ -1,5 +1,6 @@
 import { FastifyInstance } from "fastify"
 import { AppError } from "../errors/AppError"
+import { Prisma } from "@prisma/client"
 
 export async function errorHandler(app: FastifyInstance) {
 
@@ -10,16 +11,18 @@ export async function errorHandler(app: FastifyInstance) {
             })
         }
 
-        if (error.code === "P2002") {
-            return reply.status(409).send({
-                error: "Já existe um registro com esses dados."
-            })
-        }
-
-        if (error.code === "P2025") {
-            return reply.status(404).send({
-                error: "Registro não encontrado."
-            })
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+            if (error.code === "P2002") {
+                return reply.status(409).send({
+                    error: "Já existe um registro com estes dados (CPF ou E-mail duplicado)."
+                })
+            }
+            
+            if (error.code === "P2025") {
+                return reply.status(404).send({
+                    error: "Registro não encontrado."
+                })
+            }
         }
 
         console.error(error)

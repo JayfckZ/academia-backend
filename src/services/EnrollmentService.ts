@@ -1,6 +1,7 @@
 import { AppError } from "../errors/AppError"
 import { prisma } from "../lib/prisma"
 import { createEnrollmentSchema, updateEnrollmentSchema } from "../schemas"
+import { Prisma } from "@prisma/client"
 import { PaymentService } from "./PaymentService"
 
 export class EnrollmentService {
@@ -64,7 +65,11 @@ export class EnrollmentService {
 
         const updateData = Object.fromEntries(
             Object.entries(parsed.data).filter(([, v]) => v !== undefined)
-        )
+        ) as Prisma.EnrollmentUpdateInput
+
+        if (updateData.startDate) {
+            updateData.startDate = new Date(updateData.startDate as string)
+        }
 
         return prisma.enrollment.update({ where: { id }, data: updateData })
     }
