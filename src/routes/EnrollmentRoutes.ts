@@ -10,4 +10,6 @@ export async function enrollmentRoutes(app: FastifyInstance) {
     app.get("/enrollments/:id", EnrollmentController.findById)
     app.put("/enrollments/:id", EnrollmentController.update)
     app.delete("/enrollments/:id", EnrollmentController.cancel)
+
+    app.get("/enrollments/:id/risk", EnrollmentController.getRisk)
 }

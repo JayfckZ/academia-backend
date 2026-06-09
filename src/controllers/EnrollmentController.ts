@@ -43,4 +43,13 @@ export class EnrollmentController {
         const enrollment = await EnrollmentService.cancel(id)
         return reply.send(enrollment)
     }
+
+    static async getRisk(request: FastifyRequest, reply: FastifyReply) {
+        const { id } = request.params as { id: string }
+
+        const risk = await EnrollmentService.getRisk(id)
+
+        return reply.send(risk)
+    }
+
 }

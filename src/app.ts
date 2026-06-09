@@ -9,6 +9,7 @@ import { enrollmentRoutes } from './routes/EnrollmentRoutes'
 import { paymentRoutes } from './routes/PaymentRoutes'
 import { errorHandler } from './plugins/errorHandler'
 import { authRoutes } from './routes/AuthRoute'
+import { dashboardRoutes } from './routes/DashboardRoute'
 
 export function buildApp() {
     const app = Fastify({
@@ -36,6 +37,7 @@ export function buildApp() {
     app.register(enrollmentRoutes)
     app.register(paymentRoutes)
     app.register(authRoutes)
+    app.register(dashboardRoutes)
 
     return app
 }

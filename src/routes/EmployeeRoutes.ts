@@ -3,7 +3,7 @@ import { EmployeeController } from "../controllers/EmployeeController"
 import { authenticate } from "../plugins/authenticate"
 
 export async function employeeRoutes(app: FastifyInstance) {
-    // app.addHook("preHandler", authenticate)
+    app.addHook("preHandler", authenticate)
 
     app.post("/employees", EmployeeController.create)
     app.get("/employees", EmployeeController.findAll)
