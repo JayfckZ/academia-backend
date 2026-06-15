@@ -52,8 +52,9 @@ export class MlRiskService {
         students: [this.buildStudentPayload(enrollment as EnrollmentWithRelations)]
         }
 
-        const mlServiceUrl = process.env.ML_SERVICE_URL || "http://localhost:8000/predict"
-
+        let mlServiceUrl = process.env.ML_SERVICE_URL || "http://localhost:8000"
+        mlServiceUrl += '/predict'
+        
         const response = await fetch(mlServiceUrl, {
             method: "POST",
             headers: {
