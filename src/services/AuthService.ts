@@ -16,6 +16,11 @@ export class AuthService {
             throw new AppError('Credenciais inválidas.', 401)
         }
 
+        await prisma.employee.update({
+            where: { id: employee.id },
+            data: { lastLoginAt: new Date() }
+        })
+
         return {
             id: employee.id,
             name: employee.name,

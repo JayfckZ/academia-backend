@@ -10,7 +10,8 @@ const SELECT_SAFE: Prisma.EmployeeSelect = {
     email: true,
     role: true,
     active: true,
-    createdAt: true
+    createdAt: true,
+    lastLoginAt: true
 }
 
 export class EmployeeService {
